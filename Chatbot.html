@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chatbot Tiểu học Vô Tranh 1</title>
+  <style>
+    :root{--blue:#1976d2;--green:#2e7d32;--bg:#eef6ff;--line:#dbe5ef;--text:#1f2937;}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#eaf4ff,#f9fcff);font-family:Arial,sans-serif;color:var(--text);min-height:100vh;padding:16px 16px 96px}
+    .wrap{max-width:760px;margin:0 auto}
+    .card{background:#fff;border:1px solid #e1eaf2;border-radius:20px;box-shadow:0 12px 30px rgba(30,70,100,.12);padding:20px;margin-bottom:14px}
+    .header{display:flex;gap:14px;align-items:center;background:linear-gradient(135deg,#e7f2ff,#effbef)}
+    .logo{width:82px;height:82px;display:block;flex:0 0 82px;object-fit:contain;border-radius:50%;filter:drop-shadow(0 3px 5px rgba(90,120,145,.45))}
+    h1{font-size:22px;color:#17324d;margin:0 0 5px}
+    .sub{font-size:14px;color:#607080;line-height:1.5}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    label{display:block;font-size:13px;font-weight:bold;margin:10px 0 5px;color:#334155}
+    input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:11px 12px;font:inherit;outline:none;background:#fff}
+    textarea{min-height:100px;resize:vertical;line-height:1.5}
+    input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #dbeafe}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    button{border:0;border-radius:11px;padding:11px 14px;font-weight:bold;cursor:pointer;color:#fff}
+    button:disabled{opacity:.55;cursor:not-allowed}
+    .primary{background:linear-gradient(180deg,#43a047,#2e7d32);flex:1}
+    .secondary{background:linear-gradient(180deg,#1e88e5,#1976d2)}
+    .light{background:#eaf3ff;color:#1565c0}
+    .voice-button.listening{background:linear-gradient(180deg,#ef5350,#c62828);animation:voicePulse 1.2s infinite}
+    @keyframes voicePulse{50%{box-shadow:0 0 0 5px rgba(239,83,80,.18)}}
+    .voice-help-button{padding:11px 12px;font-size:12px}
+    .help-overlay{display:none;position:fixed;inset:0;z-index:1200;background:rgba(15,23,42,.48);align-items:center;justify-content:center;padding:16px}
+    .help-box{width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:20px;box-shadow:0 18px 45px rgba(15,23,42,.3)}
+    .help-box h2{margin:0 0 10px;color:#1565c0;font-size:20px}
+    .help-box p{margin:8px 0;color:#334155;line-height:1.55;font-size:14px}
+    .help-box ol{margin:8px 0 14px;padding-left:22px;color:#334155;line-height:1.65;font-size:14px}
+    .help-box li{margin-bottom:6px}
+    .help-tip{background:#fff7ed;border:1px solid #fed7aa;border-radius:11px;padding:10px;color:#9a3412;font-size:13px;line-height:1.5}
+    .help-close{width:100%;margin-top:14px;background:#1976d2}
+    .answer{display:none;margin-top:14px;border:1px solid #cfe1f2;border-radius:14px;background:#f8fbff;padding:16px;white-space:pre-wrap;line-height:1.65;font-size:15px}
+    .answer-title{font-weight:bold;color:#1565c0;margin-bottom:8px}
+    .notice{font-size:12px;color:#64748b;line-height:1.5;margin-top:10px}
+    .status{min-height:20px;color:#64748b;font-size:13px;margin-top:8px}
+    .file-name{font-size:12px;color:#64748b;margin-top:5px}
+    .image-preview{display:none;align-items:center;gap:10px;margin-top:8px;padding:8px;border:1px solid #cfe1f2;border-radius:12px;background:#f8fbff}
+    .image-preview img{width:76px;height:76px;object-fit:cover;border-radius:9px;border:1px solid #dbe5ef}
+    .image-preview-info{flex:1;font-size:12px;color:#475569;line-height:1.4}
+    .remove-image{background:#fee2e2;color:#b91c1c;padding:7px 9px;border-radius:8px;font-size:12px}
+    .speech-bar{display:none;position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:1000;align-items:center;gap:8px;width:min(720px,calc(100vw - 20px));padding:10px;background:rgba(255,255,255,.96);border:1px solid #cfe1f2;border-radius:15px;box-shadow:0 8px 24px rgba(30,70,100,.22);backdrop-filter:blur(8px)}
+    .speech-bar button{flex:1;white-space:nowrap}
+    @media(max-width:600px){body{padding:8px 8px 96px}.card{padding:15px}.grid{grid-template-columns:1fr}h1{font-size:19px}.logo{width:64px;height:64px;flex-basis:64px}}
+    @media(max-width:600px){.speech-bar{gap:6px;padding:8px}.speech-bar button{padding:10px 8px;font-size:12px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card header">
+      <img class="logo" src="https://raw.githubusercontent.com/phamdinhchien105-glitch/logo-tuctranh/main/logovotranh12.png" alt="Huy hiệu Trường Tiểu học Vô Tranh 1">
+      <div>
+        <h1>🤖 Chatbot Tiểu học Vô Tranh 1</h1>
+        <div class="sub">Hỗ trợ học tập và bảo vệ học sinh trong môi trường số</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="grid">
+        <div>
+          <label for="studentName">Tên hiển thị hoặc biệt danh</label>
+          <input id="studentName" placeholder="Ví dụ: bạn An">
+        </div>
+        <div>
+          <label for="className">Lớp</label>
+          <input id="className" placeholder="Ví dụ: 3A">
+        </div>
+        <div>
+          <label for="grade">Khối lớp</label>
+          <select id="grade">
+            <option value="1">Lớp 1</option><option value="2">Lớp 2</option>
+            <option value="3" selected>Lớp 3</option><option value="4">Lớp 4</option><option value="5">Lớp 5</option>
+          </select>
+        </div>
+        <div>
+          <label for="level">Mức hỗ trợ</label>
+          <select id="level">
+            <option value="Cần hướng dẫn thêm">Cần hướng dẫn thêm</option>
+            <option value="Đang luyện tập" selected>Đang luyện tập</option>
+            <option value="Muốn thử thách nâng cao">Muốn thử thách nâng cao</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="subject">Môn học/chủ đề</label>
+      <select id="subject"><option>Đang tải danh sách...</option></select>
+
+      <label for="question">Em muốn hỏi điều gì?</label>
+      <textarea id="question" placeholder="Ví dụ: Em hãy giải thích thư mục là gì? "></textarea>
+
+      <div class="actions">
+        <button id="voiceButton" type="button" class="secondary voice-button" onclick="startVoice()">🎙️ Hỏi bằng giọng nói</button>
+        <button type="button" class="light voice-help-button" onclick="showVoiceHelp()">❓ Cách bật micro</button>
+        <label for="imageInput" class="light" style="display:inline-block;margin:0;cursor:pointer;padding:11px 14px;border-radius:11px;font-weight:bold">📷 Chụp ảnh bài học</label>
+        <input id="imageInput" type="file" accept="image/*" capture="environment" style="display:none" onchange="showImageName(this)">
+      </div>
+      <div id="fileName" class="file-name"></div>
+      <div id="imagePreview" class="image-preview">
+        <img id="previewImage" alt="Ảnh bài học đã chọn">
+        <div id="previewInfo" class="image-preview-info"></div>
+        <button type="button" class="remove-image" onclick="removeSelectedImage()">Xóa ảnh</button>
+      </div>
+
+      <div class="actions">
+        <button id="askButton" type="button" class="primary" onclick="askQuestion()">🤖 Hỏi Chatbot</button>
+        <button type="button" class="light" onclick="clearQuestion()">Xóa</button>
+      </div>
+      <div id="status" class="status"></div>
+      <div class="notice">Em không nhập mật khẩu, địa chỉ, số điện thoại hoặc thông tin riêng tư. Khi gặp vấn đề đáng lo, hãy báo ngay cho cha mẹ hoặc thầy cô.</div>
+    </section>
+
+    <section id="answerBox" class="answer">
+      <div class="answer-title">💡 Chatbot trả lời</div>
+      <div id="answerText"></div>
+    </section>
+  </main>
+
+  <div id="speechBar" class="speech-bar" aria-label="Điều khiển đọc câu trả lời">
+    <button id="readButton" type="button" class="secondary" onclick="readAnswer()">🔊 Đọc câu trả lời</button>
+    <button id="pauseButton" type="button" class="light" onclick="toggleSpeech()" disabled>⏸️ Tạm dừng</button>
+    <button id="stopButton" type="button" class="light" onclick="stopReading()" disabled>⏹️ Dừng</button>
+  </div>
+
+  <div id="voiceHelp" class="help-overlay" role="dialog" aria-modal="true" aria-labelledby="voiceHelpTitle" onclick="closeVoiceHelp(event)">
+    <div class="help-box">
+      <h2 id="voiceHelpTitle">🎙️ Cách bật micro</h2>
+      <p>Để Chatbot nghe câu hỏi, em hãy làm theo hướng dẫn phù hợp với thiết bị:</p>
+      <ol>
+        <li><strong>Trước tiên:</strong> bấm nút <strong>Cho phép</strong> khi trình duyệt hỏi quyền sử dụng micro.</li>
+        <li><strong>Nếu đã bấm Từ chối:</strong> bấm biểu tượng ổ khóa hoặc biểu tượng thông tin ở bên trái địa chỉ trang web.</li>
+        <li>Chọn <strong>Micro</strong> → chọn <strong>Cho phép</strong>.</li>
+        <li>Đóng bảng cài đặt, tải lại trang rồi bấm <strong>🎙️ Hỏi bằng giọng nói</strong>.</li>
+      </ol>
+      <p><strong>Nếu công tắc Micro đã bật nhưng vẫn không nghe:</strong> trên Windows, vào <strong>Cài đặt → Quyền riêng tư & bảo mật → Microphone</strong>, bật <strong>Quyền truy cập microphone</strong> và <strong>Cho phép ứng dụng trên máy tính truy cập microphone</strong>.</p>
+      <div class="help-tip">Nếu vẫn chưa được, em hãy nhờ cha mẹ hoặc thầy cô mở phần Cài đặt của trình duyệt và bật quyền Micro cho trang Chatbot.</div>
+      <button type="button" class="help-close" onclick="closeVoiceHelp()">Đã hiểu</button>
+    </div>
+  </div>
+
+  <script>
+    var lastAnswer = '';
+    var availableVoices = [];
+
+    function refreshVoices(){
+      if (window.speechSynthesis) availableVoices = window.speechSynthesis.getVoices() || [];
+    }
+
+    function getVietnameseVoice(){
+      refreshVoices();
+      return availableVoices.find(function(voice){ return /^vi[-_]VN$/i.test(voice.lang); }) ||
+             availableVoices.find(function(voice){ return /^vi([-_]|$)/i.test(voice.lang); }) ||
+             null;
+    }
+
+    if (window.speechSynthesis) {
+      refreshVoices();
+      window.speechSynthesis.onvoiceschanged = refreshVoices;
+    }
+
+    window.onload = function(){
+      google.script.run.withSuccessHandler(function(subjects){
+        var select = document.getElementById('subject');
+        select.innerHTML = '';
+        (subjects || []).forEach(function(subject){
+          var option = document.createElement('option');
+          option.value = subject;
+          option.textContent = subject;
+          select.appendChild(option);
+        });
+      }).withFailureHandler(function(){
+        document.getElementById('subject').innerHTML = '<option>Chung</option><option>An toàn số</option>';
+      }).getChatbotSubjects();
+    };
+
+    var previewObjectUrl = '';
+    var voiceRecorder = null;
+    var voiceStream = null;
+    var voiceChunks = [];
+    var voiceMimeType = '';
+    var voiceStopTimer = null;
+    var voiceListening = false;
+
+    function showVoiceHelp(){
+      document.getElementById('voiceHelp').style.display = 'flex';
+    }
+
+    function closeVoiceHelp(event){
+      if (!event || event.target === document.getElementById('voiceHelp') || event.target.classList.contains('help-close')) {
+        document.getElementById('voiceHelp').style.display = 'none';
+      }
+    }
+
+    function showImageName(input){
+      var file = input.files && input.files[0];
+      var preview = document.getElementById('imagePreview');
+      if (previewObjectUrl) URL.revokeObjectURL(previewObjectUrl);
+      previewObjectUrl = '';
+      if (!file) {
+        preview.style.display = 'none';
+        document.getElementById('fileName').textContent = '';
+        return;
+      }
+      previewObjectUrl = URL.createObjectURL(file);
+      document.getElementById('previewImage').src = previewObjectUrl;
+      document.getElementById('previewInfo').textContent =
+        'Ảnh đã sẵn sàng để gửi (' + Math.round(file.size / 1024) + ' KB).';
+      document.getElementById('fileName').textContent = 'Đã chọn ảnh: ' + file.name;
+      preview.style.display = 'flex';
+      document.getElementById('status').textContent = 'Đã nhận ảnh. Em có thể nhập thêm câu hỏi rồi bấm Hỏi Chatbot.';
+    }
+
+    function removeSelectedImage(){
+      document.getElementById('imageInput').value = '';
+      if (previewObjectUrl) URL.revokeObjectURL(previewObjectUrl);
+      previewObjectUrl = '';
+      document.getElementById('imagePreview').style.display = 'none';
+      document.getElementById('fileName').textContent = '';
+      document.getElementById('status').textContent = '';
+    }
+
+    function startVoice(){
+      if (voiceListening && voiceRecorder) {
+        voiceRecorder.stop();
+        return;
+      }
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
+        document.getElementById('status').textContent = 'Thiết bị chưa hỗ trợ ghi âm trên trình duyệt này. Em hãy dùng Chrome hoặc Safari phiên bản mới.';
+        showVoiceHelp();
+        return;
+      }
+
+      var voiceButton = document.getElementById('voiceButton');
+      voiceButton.disabled = true;
+      document.getElementById('status').textContent = '🎙️ Đang xin quyền micro...';
+
+      navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+        voiceStream = stream;
+        voiceChunks = [];
+        var supportedTypes = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'];
+        voiceMimeType = '';
+        for (var i = 0; i < supportedTypes.length; i++) {
+          if (!MediaRecorder.isTypeSupported || MediaRecorder.isTypeSupported(supportedTypes[i])) {
+            voiceMimeType = supportedTypes[i];
+            break;
+          }
+        }
+
+        try {
+          voiceRecorder = voiceMimeType
+            ? new MediaRecorder(stream, {mimeType: voiceMimeType})
+            : new MediaRecorder(stream);
+        } catch (error) {
+          voiceButton.disabled = false;
+          stream.getTracks().forEach(function(track){ track.stop(); });
+          voiceStream = null;
+          document.getElementById('status').textContent = 'Không thể bắt đầu ghi âm. Em hãy dùng Chrome hoặc Safari phiên bản mới.';
+          return;
+        }
+
+        voiceRecorder.ondataavailable = function(event){
+          if (event.data && event.data.size > 0) voiceChunks.push(event.data);
+        };
+        voiceRecorder.onerror = function(){
+          voiceListening = false;
+          voiceButton.disabled = false;
+          voiceButton.classList.remove('listening');
+          voiceButton.textContent = '🎙️ Hỏi bằng giọng nói';
+          document.getElementById('status').textContent = 'Không ghi được âm thanh. Em hãy thử lại.';
+        };
+        voiceRecorder.onstop = function(){
+          clearTimeout(voiceStopTimer);
+          voiceListening = false;
+          voiceButton.disabled = false;
+          voiceButton.classList.remove('listening');
+          voiceButton.textContent = '🎙️ Hỏi bằng giọng nói';
+          if (voiceStream) voiceStream.getTracks().forEach(function(track){ track.stop(); });
+          voiceStream = null;
+
+          var blob = new Blob(voiceChunks, {type: voiceMimeType || 'audio/webm'});
+          if (blob.size < 1000) {
+            document.getElementById('status').textContent = 'Chưa ghi được câu hỏi. Em hãy bấm lại và nói rõ hơn.';
+            return;
+          }
+          sendVoiceAudio(blob);
+        };
+
+        voiceListening = true;
+        voiceButton.disabled = false;
+        voiceButton.classList.add('listening');
+        voiceButton.textContent = '⏹️ Dừng ghi âm';
+        document.getElementById('status').textContent = '🎙️ Đang ghi âm... Em hãy nói câu hỏi, sau đó bấm Dừng ghi âm.';
+        voiceRecorder.start();
+        voiceStopTimer = setTimeout(function(){
+          if (voiceRecorder && voiceListening) voiceRecorder.stop();
+        }, 30000);
+      }).catch(function(error){
+        voiceButton.disabled = false;
+        var name = error && error.name ? error.name : 'UnknownError';
+        if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+          document.getElementById('status').textContent = 'Micro chưa được cấp quyền hoặc đang bị hệ điều hành chặn. Em hãy kiểm tra lại quyền Micro.';
+          showVoiceHelp();
+        } else if (name === 'NotFoundError') {
+          document.getElementById('status').textContent = 'Không tìm thấy micro trên thiết bị.';
+        } else {
+          document.getElementById('status').textContent = 'Không mở được micro (' + name + '). Em hãy thử lại.';
+        }
+      });
+    }
+
+    function sendVoiceAudio(blob){
+      var status = document.getElementById('status');
+      var askButton = document.getElementById('askButton');
+      askButton.disabled = true;
+      status.textContent = '⏳ Đang gửi câu hỏi bằng giọng nói cho Chatbot...';
+      var reader = new FileReader();
+      reader.onload = function(){
+        var parts = String(reader.result).split(',');
+        var payload = {
+          studentName: document.getElementById('studentName').value.trim(),
+          className: document.getElementById('className').value.trim(),
+          grade: document.getElementById('grade').value,
+          level: document.getElementById('level').value,
+          subject: document.getElementById('subject').value,
+          question: '',
+          audioBase64: parts.length > 1 ? parts[1] : parts[0],
+          audioMimeType: blob.type || 'audio/webm'
+        };
+        google.script.run
+          .withSuccessHandler(function(result){
+            askButton.disabled = false;
+            status.textContent = result.blocked
+              ? 'Câu hỏi đã được chuyển hướng để bảo đảm an toàn.'
+              : (result.complete === false
+                ? '⚠️ AI đã trả lời nhưng có thể chưa đủ ý. Em hãy thử lại.'
+                : 'Đã nghe và trả lời xong câu hỏi.');
+            lastAnswer = result.answer || '';
+            document.getElementById('answerText').textContent = lastAnswer;
+            document.getElementById('answerBox').style.display = 'block';
+            document.getElementById('speechBar').style.display = 'flex';
+            document.getElementById('answerBox').scrollIntoView({behavior:'smooth',block:'start'});
+          })
+          .withFailureHandler(function(error){
+            askButton.disabled = false;
+            status.textContent = '❌ ' + (error && error.message ? error.message : String(error));
+          })
+          .askChatbot(payload);
+      };
+      reader.onerror = function(){
+        askButton.disabled = false;
+        status.textContent = 'Không đọc được đoạn ghi âm. Em hãy thử lại.';
+      };
+      reader.readAsDataURL(blob);
+    }
+
+    function askQuestion(){
+      var question = document.getElementById('question').value.trim();
+      var file = document.getElementById('imageInput').files[0];
+      if (!question && !file) { alert('Em hãy nhập câu hỏi hoặc chọn ảnh bài học.'); return; }
+
+      var button = document.getElementById('askButton');
+      var status = document.getElementById('status');
+      button.disabled = true;
+      status.textContent = '⏳ Chatbot đang suy nghĩ...';
+
+      var payload = {
+        studentName: document.getElementById('studentName').value.trim(),
+        className: document.getElementById('className').value.trim(),
+        grade: document.getElementById('grade').value,
+        level: document.getElementById('level').value,
+        subject: document.getElementById('subject').value,
+        question: question
+      };
+
+      function send(){
+        google.script.run
+          .withSuccessHandler(function(result){
+            button.disabled = false;
+            status.textContent = result.blocked
+              ? 'Câu hỏi đã được chuyển hướng để bảo đảm an toàn.'
+              : (result.complete === false
+                ? '⚠️ AI đã trả lời nhưng có thể chưa đủ ý. Em hãy bấm Hỏi Chatbot để thử lại.'
+                : 'Đã trả lời xong.');
+            lastAnswer = result.answer || '';
+            document.getElementById('answerText').textContent = lastAnswer;
+            document.getElementById('answerBox').style.display = 'block';
+            document.getElementById('speechBar').style.display = 'flex';
+            document.getElementById('answerBox').scrollIntoView({behavior:'smooth',block:'start'});
+          })
+          .withFailureHandler(function(error){
+            button.disabled = false;
+            status.textContent = '❌ ' + (error && error.message ? error.message : String(error));
+          })
+          .askChatbot(payload);
+      }
+
+      if (!file) { send(); return; }
+      if (file.size > 4000000) {
+        button.disabled = false;
+        status.textContent = 'Ảnh quá lớn. Em hãy chọn ảnh nhỏ hơn 4 MB.';
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function(){
+        var parts = String(reader.result).split(',');
+        payload.imageBase64 = parts.length > 1 ? parts[1] : parts[0];
+        payload.imageMimeType = file.type || 'image/jpeg';
+        send();
+      };
+      reader.onerror = function(){ button.disabled = false; status.textContent = 'Không đọc được ảnh.'; };
+      reader.readAsDataURL(file);
+    }
+
+    var speechChunks = [];
+    var speechIndex = 0;
+    var speechVoice = null;
+
+    function cleanSpeechText(text){
+      return String(text || '')
+        .replace(new RegExp(String.fromCharCode(96), 'g'), '')
+        .replace(/[\*_#]/g, '')
+        .replace(/^\s*[-•]\s*/gm, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function splitSpeechText(text){
+      var clean = cleanSpeechText(text);
+      var sentences = clean.match(/[^.!?。！？；;]+[.!?。！？；;]+|[^.!?。！？；;]+$/g) || [clean];
+      var chunks = [], current = '';
+      sentences.forEach(function(sentence){
+        sentence = sentence.trim();
+        if (!sentence) return;
+        if ((current + ' ' + sentence).trim().length > 240 && current) {
+          chunks.push(current.trim());
+          current = sentence;
+        } else {
+          current = (current + ' ' + sentence).trim();
+        }
+      });
+      if (current) chunks.push(current.trim());
+      return chunks;
+    }
+
+    function setSpeechButtons(reading){
+      document.getElementById('pauseButton').disabled = !reading;
+      document.getElementById('stopButton').disabled = !reading;
+    }
+
+    function speakNextChunk(){
+      if (speechIndex >= speechChunks.length) {
+        setSpeechButtons(false);
+        document.getElementById('pauseButton').textContent = '⏸️ Tạm dừng';
+        document.getElementById('status').textContent = 'Đã đọc xong câu trả lời.';
+        return;
+      }
+      var utterance = new SpeechSynthesisUtterance(speechChunks[speechIndex++]);
+      utterance.voice = speechVoice;
+      utterance.lang = speechVoice.lang || 'vi-VN';
+      utterance.rate = 0.82;
+      utterance.pitch = 1.02;
+      utterance.volume = 1;
+      utterance.onend = function(){ setTimeout(speakNextChunk, 140); };
+      utterance.onerror = function(){
+        setSpeechButtons(false);
+        document.getElementById('status').textContent = 'Không thể tiếp tục đọc câu trả lời.';
+      };
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function readAnswer(){
+      if (!lastAnswer) return;
+      if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+        document.getElementById('status').textContent = 'Thiết bị hoặc trình duyệt chưa hỗ trợ đọc văn bản.';
+        return;
+      }
+
+      speechVoice = getVietnameseVoice();
+      if (!speechVoice) {
+        document.getElementById('status').textContent = 'Máy này chưa có giọng đọc tiếng Việt. Hãy cài hoặc bật giọng tiếng Việt trong cài đặt đọc văn bản của thiết bị.';
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      speechChunks = splitSpeechText(lastAnswer);
+      speechIndex = 0;
+      setSpeechButtons(true);
+      document.getElementById('pauseButton').textContent = '⏸️ Tạm dừng';
+      document.getElementById('status').textContent = '🔊 Đang đọc câu trả lời bằng tiếng Việt...';
+      speakNextChunk();
+    }
+
+    function toggleSpeech(){
+      if (!window.speechSynthesis) return;
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+        document.getElementById('pauseButton').textContent = '⏸️ Tạm dừng';
+        document.getElementById('status').textContent = '🔊 Đang tiếp tục đọc...';
+      } else if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.pause();
+        document.getElementById('pauseButton').textContent = '▶️ Tiếp tục';
+        document.getElementById('status').textContent = 'Đã tạm dừng đọc.';
+      }
+    }
+
+    function stopReading(){
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+      speechChunks = [];
+      speechIndex = 0;
+      setSpeechButtons(false);
+      document.getElementById('pauseButton').textContent = '⏸️ Tạm dừng';
+      document.getElementById('status').textContent = 'Đã dừng đọc.';
+    }
+
+    function clearQuestion(){
+      if (voiceRecorder && voiceListening) voiceRecorder.stop();
+      if (voiceStream) voiceStream.getTracks().forEach(function(track){ track.stop(); });
+      clearTimeout(voiceStopTimer);
+      voiceRecorder = null;
+      voiceStream = null;
+      voiceChunks = [];
+      voiceListening = false;
+      var voiceButton = document.getElementById('voiceButton');
+      voiceButton.disabled = false;
+      voiceButton.classList.remove('listening');
+      voiceButton.textContent = '🎙️ Hỏi bằng giọng nói';
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+      speechChunks = [];
+      speechIndex = 0;
+      setSpeechButtons(false);
+      document.getElementById('speechBar').style.display = 'none';
+      document.getElementById('question').value = '';
+      document.getElementById('imageInput').value = '';
+      if (previewObjectUrl) URL.revokeObjectURL(previewObjectUrl);
+      previewObjectUrl = '';
+      document.getElementById('imagePreview').style.display = 'none';
+      document.getElementById('fileName').textContent = '';
+      document.getElementById('status').textContent = '';
+    }
+  </script>
+</body>
+</html>
