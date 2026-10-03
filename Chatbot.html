@@ -4,7 +4,750 @@
   <base target="_top">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Chatbot Tiểu học Vô Tranh 1</title>
+  <style><!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#0b2e55">
+  <title>Luyện chuột máy tính - Trường Tiểu học Tức Tranh</title>
   <style>
+    :root {
+      --navy: #0b2e55;
+      --navy-2: #174a7b;
+      --yellow: #ffd43b;
+      --yellow-soft: #fff5bf;
+      --green: #00a676;
+      --purple: #8151e8;
+      --orange: #f47c20;
+      --blue: #2783c2;
+      --ink: #17324f;
+      --muted: #667b92;
+      --panel: #ffffff;
+      --line: #d8e5f1;
+      --success: #067647;
+      --danger: #b42318;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255, 212, 59, .25), transparent 28%),
+        linear-gradient(135deg, #eaf4ff 0%, #f8fbff 48%, #fff6da 100%);
+      color: var(--ink);
+      font-family: "Arial", "Segoe UI", sans-serif;
+    }
+
+    button { font: inherit; }
+
+    .app {
+      width: min(1120px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 22px 18px 34px;
+    }
+
+    .brand-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      border-radius: 24px;
+      color: white;
+      background: linear-gradient(110deg, var(--navy), var(--navy-2));
+      box-shadow: 0 14px 32px rgba(11, 46, 85, .20);
+    }
+
+    .brand-icon {
+      display: grid;
+      place-items: center;
+      width: 54px;
+      height: 54px;
+      border-radius: 17px;
+      background: var(--yellow);
+      color: var(--navy);
+      font-size: 30px;
+      flex: 0 0 auto;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: clamp(20px, 3vw, 31px);
+      line-height: 1.15;
+      letter-spacing: -.4px;
+    }
+
+    .brand-subtitle {
+      margin: 5px 0 0;
+      color: #d8ecff;
+      font-size: 14px;
+    }
+
+    .screen {
+      margin-top: 20px;
+      padding: clamp(18px, 4vw, 34px);
+      border: 1px solid rgba(255,255,255,.9);
+      border-radius: 28px;
+      background: rgba(255,255,255,.88);
+      box-shadow: 0 18px 42px rgba(36, 70, 104, .13);
+    }
+
+    .hidden { display: none !important; }
+
+    .home-heading { text-align: center; }
+
+    .home-heading h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(24px, 4vw, 39px);
+    }
+
+    .home-heading p {
+      margin: 9px auto 0;
+      max-width: 650px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 15px;
+      margin-top: 28px;
+    }
+
+    .mission-card {
+      min-height: 156px;
+      border: 0;
+      border-radius: 22px;
+      padding: 18px;
+      color: white;
+      text-align: left;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease;
+      box-shadow: 0 10px 18px rgba(23, 50, 79, .14);
+    }
+
+    .mission-card:hover,
+    .mission-card:focus-visible {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 26px rgba(23, 50, 79, .23);
+      outline: none;
+    }
+
+    .mission-card.move { background: linear-gradient(135deg, #008e6d, #00b989); }
+    .mission-card.click { background: linear-gradient(135deg, #6841cc, #9a5cff); }
+    .mission-card.double { background: linear-gradient(135deg, #286ea7, #2d9ed5); }
+    .mission-card.drag { background: linear-gradient(135deg, #e76510, #fa9b10); }
+
+    .mission-icon { font-size: 34px; }
+
+    .mission-card strong {
+      display: block;
+      margin-top: 10px;
+      font-size: 20px;
+    }
+
+    .mission-card span {
+      display: block;
+      margin-top: 7px;
+      color: rgba(255,255,255,.9);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .tips {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .game-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .game-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .game-head h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(22px, 3vw, 31px);
+    }
+
+    .game-instruction {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .secondary-button,
+    .primary-button {
+      border: 0;
+      border-radius: 13px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .secondary-button {
+      color: var(--navy);
+      background: #eaf3fb;
+    }
+
+    .primary-button {
+      color: var(--navy);
+      background: var(--yellow);
+      box-shadow: 0 8px 16px rgba(181, 133, 0, .18);
+    }
+
+    .secondary-button:hover,
+    .primary-button:hover { filter: brightness(.97); transform: translateY(-1px); }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .progress-track {
+      height: 12px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: #e6eef6;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--navy-2), var(--yellow));
+      transition: width .2s ease;
+    }
+
+    .stat {
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .play-area {
+      position: relative;
+      min-height: 390px;
+      overflow: hidden;
+      border: 3px solid #dceaf6;
+      border-radius: 22px;
+      background:
+        linear-gradient(rgba(255,255,255,.83), rgba(255,255,255,.83)),
+        repeating-linear-gradient(0deg, transparent 0 39px, rgba(39,131,194,.06) 40px),
+        repeating-linear-gradient(90deg, transparent 0 39px, rgba(39,131,194,.06) 40px),
+        #f9fcff;
+    }
+
+    .play-message {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      color: var(--muted);
+      font-size: 18px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .target {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 78px;
+      height: 78px;
+      border: 5px solid white;
+      border-radius: 50%;
+      color: var(--navy);
+      background: var(--yellow);
+      box-shadow: 0 8px 18px rgba(11, 46, 85, .24), 0 0 0 4px rgba(255,212,59,.36);
+      font-size: 34px;
+      cursor: crosshair;
+      user-select: none;
+      animation: pop .2s ease-out;
+    }
+
+    .target:hover { filter: brightness(1.04); transform: scale(1.06); }
+
+    @keyframes pop {
+      from { transform: scale(.65); opacity: .2; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .drag-board {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      padding: 28px;
+    }
+
+    .drag-column h3 {
+      margin: 0 0 14px;
+      color: var(--navy);
+      font-size: 18px;
+    }
+
+    .drag-list,
+    .drop-list { display: grid; gap: 13px; }
+
+    .drag-card,
+    .drop-zone {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 62px;
+      border-radius: 16px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .drag-card {
+      color: white;
+      cursor: grab;
+      box-shadow: 0 7px 14px rgba(23,50,79,.14);
+    }
+
+    .drag-card:active { cursor: grabbing; }
+
+    .drop-zone {
+      border: 2px dashed currentColor;
+      background: rgba(255,255,255,.7);
+    }
+
+    .color-blue { color: #1f6fa8; background-color: #d8efff; }
+    .color-green { color: #08744f; background-color: #d7f8eb; }
+    .color-yellow { color: #966f00; background-color: #fff2b8; }
+    .drag-card.color-blue { background: #2783c2; }
+    .drag-card.color-green { background: #00a676; }
+    .drag-card.color-yellow { background: #eab800; }
+    .drop-zone.over { outline: 4px solid rgba(255,212,59,.45); transform: scale(1.02); }
+    .drop-zone.done { border-style: solid; color: var(--success); background: #e7f8ef; }
+
+    .feedback {
+      min-height: 27px;
+      margin: 13px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .feedback.success { color: var(--success); }
+    .feedback.error { color: var(--danger); }
+
+    .result-card {
+      max-width: 580px;
+      margin: 26px auto 0;
+      padding: 28px;
+      border: 2px solid #cfe7d9;
+      border-radius: 22px;
+      background: #f3fff8;
+      text-align: center;
+    }
+
+    .result-card h3 { margin: 0; color: var(--success); font-size: 27px; }
+    .result-card p { margin: 10px 0 20px; color: var(--ink); line-height: 1.55; }
+
+    .report-note {
+      margin-top: 22px;
+      padding: 14px 16px;
+      border-left: 5px solid var(--yellow);
+      border-radius: 10px;
+      color: #49627b;
+      background: #fffdf0;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 850px) {
+      .mission-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 620px) {
+      .app { padding: 12px 10px 25px; }
+      .brand-bar { padding: 13px 15px; border-radius: 18px; }
+      .brand-icon { width: 44px; height: 44px; font-size: 24px; }
+      .screen { padding: 16px; border-radius: 20px; }
+      .mission-grid { grid-template-columns: 1fr; gap: 11px; }
+      .mission-card { min-height: 115px; }
+      .game-head { display: block; }
+      .game-head .game-actions { justify-content: flex-start; margin-top: 13px; }
+      .score-row { grid-template-columns: 1fr auto; }
+      .score-row .progress-track { grid-column: 1 / -1; grid-row: 2; }
+      .play-area { min-height: 350px; }
+      .drag-board { grid-template-columns: 1fr; padding: 18px; gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="brand-bar">
+      <div class="brand-icon" aria-hidden="true">🖱️</div>
+      <div>
+        <h1 class="brand-title">Thử thách thao tác với chuột máy tính</h1>
+        <p class="brand-subtitle">Trường Tiểu học Tức Tranh·</p>
+      </div>
+    </header>
+
+    <section id="homeScreen" class="screen">
+      <div class="home-heading">
+        <h2>Em sẵn sàng luyện tập chưa?</h2>
+        <p>Hãy chọn một nhiệm vụ. Di chuyển thật chính xác và thực hiện đúng thao tác với chuột nhé!</p>
+      </div>
+
+      <div class="mission-grid" aria-label="Các nhiệm vụ luyện chuột">
+        <button class="mission-card move" data-mode="move">
+          <span class="mission-icon">☝️</span>
+          <strong>Di chuyển chuột</strong>
+          <span>Đưa con trỏ tới đúng mục tiêu</span>
+        </button>
+        <button class="mission-card click" data-mode="click">
+          <span class="mission-icon">👆</span>
+          <strong>Nháy chuột</strong>
+          <span>Nháy vào các mục tiêu xuất hiện</span>
+        </button>
+        <button class="mission-card double" data-mode="double">
+          <span class="mission-icon">👆👆</span>
+          <strong>Nháy đúp chuột</strong>
+          <span>Nháy nhanh hai lần vào mục tiêu</span>
+        </button>
+        <button class="mission-card drag" data-mode="drag">
+          <span class="mission-icon">✋</span>
+          <strong>Kéo – thả chuột</strong>
+          <span>Kéo thẻ màu vào đúng vị trí</span>
+        </button>
+      </div>
+
+      <div class="tips">💡 Mẹo: đặt tay nhẹ lên chuột, nhìn vào màn hình và thao tác thật chậm rãi.</div>
+    </section>
+
+    <section id="gameScreen" class="screen hidden">
+      <div class="game-head">
+        <div>
+          <h2 id="gameTitle">Nhiệm vụ luyện chuột</h2>
+          <p id="gameInstruction" class="game-instruction"></p>
+        </div>
+        <div class="game-actions">
+          <button id="soundButton" class="secondary-button" type="button">🔊 Âm thanh: Bật</button>
+          <button id="homeButton" class="secondary-button" type="button">↩ Về menu</button>
+        </div>
+      </div>
+
+      <div class="score-row">
+        <div class="progress-track" aria-label="Tiến độ">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+        <div id="roundStat" class="stat">Vòng 0/10</div>
+        <div id="scoreStat" class="stat">Điểm: 0</div>
+      </div>
+
+      <div id="playArea" class="play-area" aria-live="polite"></div>
+      <div id="feedback" class="feedback"></div>
+      <div id="resultArea"></div>
+
+      <div class="report-note">
+        Sản phẩm phục vụ hoạt động thực hành: học sinh luyện di chuyển, nháy chuột, nháy đúp và kéo – thả trong môi trường trực quan, vui vẻ.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const homeScreen = document.getElementById('homeScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const gameTitle = document.getElementById('gameTitle');
+    const gameInstruction = document.getElementById('gameInstruction');
+    const playArea = document.getElementById('playArea');
+    const feedback = document.getElementById('feedback');
+    const resultArea = document.getElementById('resultArea');
+    const progressBar = document.getElementById('progressBar');
+    const roundStat = document.getElementById('roundStat');
+    const scoreStat = document.getElementById('scoreStat');
+    const homeButton = document.getElementById('homeButton');
+    const soundButton = document.getElementById('soundButton');
+
+    const modes = {
+      move: {
+        title: 'Di chuyển chuột',
+        instruction: 'Di chuyển con trỏ vào vòng tròn vàng. Không cần nháy chuột.',
+        rounds: 10
+      },
+      click: {
+        title: 'Nháy chuột',
+        instruction: 'Di chuyển con trỏ và nháy một lần vào mục tiêu vàng.',
+        rounds: 10
+      },
+      double: {
+        title: 'Nháy đúp chuột',
+        instruction: 'Di chuyển con trỏ và nháy nhanh hai lần vào mục tiêu vàng.',
+        rounds: 10
+      },
+      drag: {
+        title: 'Kéo – thả chuột',
+        instruction: 'Kéo từng thẻ màu vào ô có màu giống thẻ.',
+        rounds: 10
+      }
+    };
+
+    let currentMode = null;
+    let round = 0;
+    let score = 0;
+    let timerId = null;
+    let startedAt = 0;
+    let soundEnabled = true;
+    let audioContext = null;
+
+    document.querySelectorAll('[data-mode]').forEach((button) => {
+      button.addEventListener('click', () => startMode(button.dataset.mode));
+    });
+
+    homeButton.addEventListener('click', showHome);
+    soundButton.addEventListener('click', toggleSound);
+
+    function startMode(mode) {
+      currentMode = mode;
+      round = 0;
+      score = 0;
+      startedAt = Date.now();
+      clearInterval(timerId);
+      homeScreen.classList.add('hidden');
+      gameScreen.classList.remove('hidden');
+      gameTitle.textContent = modes[mode].title;
+      gameInstruction.textContent = modes[mode].instruction;
+      resultArea.innerHTML = '';
+      feedback.className = 'feedback';
+      feedback.textContent = '';
+      prepareAudio();
+      updateStats();
+      nextRound();
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      soundButton.textContent = soundEnabled ? '🔊 Âm thanh: Bật' : '🔇 Âm thanh: Tắt';
+      if (soundEnabled) prepareAudio();
+    }
+
+    function prepareAudio() {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      if (!audioContext) audioContext = new AudioContextClass();
+      if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
+    }
+
+    function playSuccessSound() {
+      if (!soundEnabled) return;
+      prepareAudio();
+      if (!audioContext) return;
+
+      const now = audioContext.currentTime;
+      const notes = [523.25, 659.25, 783.99];
+      notes.forEach((frequency, index) => {
+        const start = now + index * 0.075;
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(frequency, start);
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.12, start + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.20);
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        oscillator.start(start);
+        oscillator.stop(start + 0.22);
+      });
+    }
+
+    function showHome() {
+      clearInterval(timerId);
+      currentMode = null;
+      gameScreen.classList.add('hidden');
+      homeScreen.classList.remove('hidden');
+      playArea.innerHTML = '';
+      resultArea.innerHTML = '';
+      feedback.textContent = '';
+    }
+
+    function updateStats() {
+      const total = currentMode ? modes[currentMode].rounds : 5;
+      roundStat.textContent = `Vòng ${Math.min(round, total)}/${total}`;
+      scoreStat.textContent = `Điểm: ${score}`;
+      progressBar.style.width = `${Math.min(100, (round / total) * 100)}%`;
+    }
+
+    function nextRound() {
+      const total = modes[currentMode].rounds;
+      if (round >= total) {
+        finishGame();
+        return;
+      }
+      round += 1;
+      updateStats();
+      feedback.className = 'feedback';
+      feedback.textContent = '';
+      playArea.innerHTML = '';
+      if (currentMode === 'drag') buildDragRound();
+      else buildTargetRound();
+    }
+
+    function randomPosition() {
+      return {
+        left: `${12 + Math.random() * 75}%`,
+        top: `${15 + Math.random() * 68}%`
+      };
+    }
+
+    function buildTargetRound() {
+      const target = document.createElement('button');
+      target.className = 'target';
+      target.type = 'button';
+      target.textContent = currentMode === 'double' ? '🎁' : '★';
+      target.setAttribute('aria-label', 'Mục tiêu');
+      const position = randomPosition();
+      target.style.left = position.left;
+      target.style.top = position.top;
+
+      if (currentMode === 'move') {
+        target.addEventListener('mouseenter', () => successRound('Rất tốt! Em đã di chuyển chuột thật chính xác.'));
+      } else if (currentMode === 'click') {
+        target.addEventListener('click', () => successRound('Chính xác! Em đã nháy chuột đúng.'));
+      } else {
+        target.addEventListener('click', () => {
+          feedback.className = 'feedback';
+          feedback.textContent = 'Em hãy nháy nhanh hai lần liên tiếp nhé!';
+        });
+        target.addEventListener('dblclick', (event) => {
+          event.preventDefault();
+          successRound('Tuyệt vời! Em đã nháy đúp chuột đúng.');
+        });
+      }
+      playArea.appendChild(target);
+    }
+
+    function buildDragRound() {
+      const items = [
+        { id: 'blue', label: 'Thẻ xanh', icon: '🔵' },
+        { id: 'green', label: 'Thẻ xanh lá', icon: '🟢' },
+        { id: 'yellow', label: 'Thẻ vàng', icon: '🟡' }
+      ];
+      const board = document.createElement('div');
+      board.className = 'drag-board';
+      board.innerHTML = `
+        <div class="drag-column">
+          <h3>Thẻ cần kéo</h3>
+          <div class="drag-list"></div>
+        </div>
+        <div class="drag-column">
+          <h3>Ô nhận thẻ</h3>
+          <div class="drop-list"></div>
+        </div>`;
+      const dragList = board.querySelector('.drag-list');
+      const dropList = board.querySelector('.drop-list');
+
+      [...items].sort(() => Math.random() - .5).forEach((item) => {
+        const card = document.createElement('div');
+        card.className = `drag-card color-${item.id}`;
+        card.draggable = true;
+        card.dataset.color = item.id;
+        card.textContent = `${item.icon} ${item.label}`;
+        card.addEventListener('dragstart', (event) => {
+          event.dataTransfer.setData('text/plain', item.id);
+          event.dataTransfer.effectAllowed = 'move';
+        });
+        dragList.appendChild(card);
+
+        const zone = document.createElement('div');
+        zone.className = `drop-zone color-${item.id}`;
+        zone.dataset.color = item.id;
+        zone.textContent = `Thả ${item.label.toLowerCase()} vào đây`;
+        zone.addEventListener('dragover', (event) => {
+          event.preventDefault();
+          zone.classList.add('over');
+        });
+        zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+        zone.addEventListener('drop', (event) => {
+          event.preventDefault();
+          zone.classList.remove('over');
+          const draggedColor = event.dataTransfer.getData('text/plain');
+          if (draggedColor === zone.dataset.color && !zone.classList.contains('done')) {
+            zone.classList.add('done');
+            zone.textContent = `✓ ${item.label} đúng rồi`;
+            const cardToHide = dragList.querySelector(`[data-color="${draggedColor}"]`);
+            if (cardToHide) cardToHide.remove();
+            score += 10;
+            scoreStat.textContent = `Điểm: ${score}`;
+            if (!dragList.children.length) successRound('Hoàn thành! Em đã kéo – thả đúng tất cả các thẻ.');
+          } else {
+            feedback.className = 'feedback error';
+            feedback.textContent = 'Chưa đúng ô rồi. Em hãy thử lại nhé!';
+          }
+        });
+        dropList.appendChild(zone);
+      });
+      playArea.appendChild(board);
+    }
+
+    function successRound(message) {
+      if (feedback.dataset.locked === 'true') return;
+      feedback.dataset.locked = 'true';
+      playSuccessSound();
+      score += 10;
+      scoreStat.textContent = `Điểm: ${score}`;
+      feedback.className = 'feedback success';
+      feedback.textContent = message;
+      setTimeout(() => {
+        feedback.dataset.locked = 'false';
+        nextRound();
+      }, 800);
+    }
+
+    function finishGame() {
+      clearInterval(timerId);
+      updateStats();
+      const seconds = Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+      resultArea.innerHTML = `
+        <div class="result-card">
+          <h3>🎉 Hoàn thành nhiệm vụ!</h3>
+          <p>Em đạt <strong>${score} điểm</strong> trong ${seconds} giây.<br>Hãy tiếp tục luyện tập để thao tác ngày càng nhanh và chính xác nhé!</p>
+          <button class="primary-button" id="retryButton">Chơi lại</button>
+          <button class="secondary-button" id="resultHomeButton">Về menu</button>
+        </div>`;
+      document.getElementById('retryButton').addEventListener('click', () => startMode(currentMode));
+      document.getElementById('resultHomeButton').addEventListener('click', showHome);
+    }
+  </script>
+</body>
+</html>
+
     :root{--blue:#1976d2;--green:#2e7d32;--bg:#eef6ff;--line:#dbe5ef;--text:#1f2937;}
     *{box-sizing:border-box}
     body{margin:0;background:linear-gradient(180deg,#eaf4ff,#f9fcff);font-family:Arial,sans-serif;color:var(--text);min-height:100vh;padding:16px 16px 96px}
